@@ -396,22 +396,6 @@ static int ws2812_buffer_size(lua_State* L) {
   return 1;
 }
 
-static int ws2812_buffer_copy(lua_State* L) {
-  ws2812_buffer * destBuffer = (ws2812_buffer*)lua_touserdata(L, 1);
-  luaL_argcheck(L, destBuffer && destBuffer->canary == CANARY_VALUE, 1, "ws2812.buffer expected");
-
-  ws2812_buffer * sourceBuffer = (ws2812_buffer*)lua_touserdata(L, 2);
-  luaL_argcheck(L, sourceBuffer && sourceBuffer->canary == CANARY_VALUE, 2, "ws2812.buffer expected");  
-
-  if (destBuffer->size != sourceBuffer->size || destBuffer->colorsPerLed != sourceBuffer->colorsPerLed) {
-      luaL_argerror(L, 2, "ws2812.buffer is not the same size");
-  }
-
-  c_memcpy(&destBuffer->values[0], &sourceBuffer->values[0], destBuffer->size*destBuffer->colorsPerLed);
-
-  return 0;
-}
-
 static const LUA_REG_TYPE ws2812_buffer_map[] =
 {
   { LSTRKEY( "fade" ),    LFUNCVAL( ws2812_buffer_fade )},
@@ -419,7 +403,6 @@ static const LUA_REG_TYPE ws2812_buffer_map[] =
   { LSTRKEY( "get" ),     LFUNCVAL( ws2812_buffer_get )},
   { LSTRKEY( "set" ),     LFUNCVAL( ws2812_buffer_set )},
   { LSTRKEY( "size" ),    LFUNCVAL( ws2812_buffer_size )},
-  { LSTRKEY( "copy" ),    LFUNCVAL( ws2812_buffer_copy )},
   { LSTRKEY( "shift" ),   LFUNCVAL( ws2812_buffer_shift )},
   { LSTRKEY( "__index" ), LROVAL( ws2812_buffer_map )},
   { LNILKEY, LNILVAL}
