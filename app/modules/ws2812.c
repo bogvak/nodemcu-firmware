@@ -373,6 +373,21 @@ static int ws2812_buffer_set(lua_State* L) {
     }
 
     c_memcpy(&buffer->values[buffer->colorsPerLed*led], buf, len);
+
+  } else if(type == LUA_TUSERDATA) 
+  {
+  	ws2812_buffer * sourceBuffer = (ws2812_buffer*)lua_touserdata(L, 3);
+  	luaL_argcheck(L, sourceBuffer && sourceBuffer->canary == CANARY_VALUE, 3, "ws2812.buffer expected");
+
+  	if (buffer->colorsPerLed != sourceBuffer->colorsPerLed) {
+      luaL_argerror(L, 3, "ws2812.buffer colors per LED value is not the same");
+    }
+
+  	if (buffer->size+led < sourceBuffer->size) {
+      luaL_argerror(L, 3, "copied ws2812.buffer size will exceed destination ws2812.buffer size");
+    }
+
+    c_memcpy(&buffer->values[buffer->colorsPerLed*led], &sourceBuffer->values[0], sourceBuffer->size*sourceBuffer->colorsPerLed);
   }
   else
   {
